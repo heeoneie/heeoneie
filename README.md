@@ -46,7 +46,12 @@ LLM 리스크 분류기와 OWL 2 온톨로지 추론을 openFDA 실데이터 위
 
 ### 오픈소스 기여
 
-**[apache/maka](https://github.com/apache/maka)** (Apache Software Foundation, incubating) — 샌드박스 파일시스템 워커의 Grep이 `-`로 시작하는 패턴을 ripgrep 플래그로 넘기고 있었습니다. 파일에 있는 문자열을 오류 없이 "없음"으로 보고하던 버그라, 같은 저장소가 이미 올바르게 처리하던 방식으로 맞추고 회귀 테스트를 붙였습니다. — [#3903](https://github.com/apache/maka/pull/3903) merged
+**[apache/maka](https://github.com/apache/maka)** — Apache Software Foundation (incubating)
+
+- 샌드박스 파일시스템 워커의 Grep이 `-`로 시작하는 패턴을 ripgrep 플래그로 넘기고 있었습니다. 파일에 있는 문자열을 오류 없이 "없음"으로 보고하던 버그라, 같은 저장소가 이미 올바르게 처리하던 방식으로 맞추고 회귀 테스트를 붙였습니다. — [#3903](https://github.com/apache/maka/pull/3903) merged
+- Agent Graph 라벨이 flex 수축으로 세로로 쪼개지던 문제. 중국어 전용으로 보고됐지만 영어도 기본 폭에서 깨진다는 걸 확인해, "라벨은 수축하지 않는다"로 범위를 다시 잡았습니다. — [#3970](https://github.com/apache/maka/pull/3970) merged
+
+한국어 로케일 추가([#3975](https://github.com/apache/maka/issues/3975))를 맡아 진행 중입니다.
 
 ### 일하는 방식
 
