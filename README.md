@@ -38,9 +38,7 @@ LLM 리스크 분류기와 OWL 2 온톨로지 추론을 openFDA 실데이터 위
 
 **[analyze-review](https://github.com/heeoneie/analyze-review)** — 이커머스 통합 솔루션이 다루지 않던 리뷰 카테고리를 만드는 데서 출발했습니다. 셀러용 분석기를 만든 뒤 실제 배달 매장에 도입하면서, 문제가 예상과 다르다는 걸 리뷰 441건을 직접 세어보고 알았습니다. 불만 처리가 아니라 *사과할 일이 없어서 인사말이 반복되는 것* 이 진짜 문제였습니다. 답글 생성기는 현재 실매장에서 운영 중입니다.
 
-**[review-radar](https://github.com/heeoneie/review-radar)** — 같은 기술을 소비자 쪽으로 돌린 크롬 확장. 별점 분포·구매 인증 비율·리뷰 폭주·코사인 유사도 클러스터 네 신호를 로컬에서 계산하고 AI 판단과 40:60으로 합산합니다. 아마존이 스크래핑을 막아서 방식을 네 번 갈아엎었습니다.
-
-**[VOIX](https://github.com/heeoneie/VOIX)** — 음성으로 답하면 AI가 맥락을 읽고 다음 질문을 만드는 설문 시스템. `Next.js` `Gemini` `ElevenLabs` `Supabase`
+**[review-radar](https://github.com/heeoneie/review-radar)** — 같은 기술을 소비자 쪽으로 돌린 크롬 확장. 별점 분포·구매 인증 비율·리뷰 폭주·코사인 유사도 클러스터 네 신호를 로컬에서 계산하고 AI 판단과 40:60으로 합산합니다.
 
 ---
 
