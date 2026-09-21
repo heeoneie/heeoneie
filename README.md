@@ -44,26 +44,34 @@ LLM 리스크 분류기와 OWL 2 온톨로지 추론을 openFDA 실데이터 위
 
 ### 오픈소스 기여
 
+머지 8건 — apache/maka 3 · fedify 4 · presidio 1
+
 **[apache/maka](https://github.com/apache/maka)** — Apache Software Foundation (incubating)
 
 - 샌드박스 파일시스템 워커의 Grep이 `-`로 시작하는 패턴을 ripgrep 플래그로 넘기고 있었습니다. 파일에 있는 문자열을 오류 없이 "없음"으로 보고하던 버그라, 같은 저장소가 이미 올바르게 처리하던 방식으로 맞추고 회귀 테스트를 붙였습니다. — [#3903](https://github.com/apache/maka/pull/3903) merged
 - Agent Graph 라벨이 flex 수축으로 세로로 쪼개지던 문제. 중국어 전용으로 보고됐지만 영어도 기본 폭에서 깨진다는 걸 확인해, "라벨은 수축하지 않는다"로 범위를 다시 잡았습니다. — [#3970](https://github.com/apache/maka/pull/3970) merged
 - 더 이상 호출되지 않는 레거시 Usage 세션 스캐너를 스토리지 경로에서 제거했습니다. 전용 테스트와 entrypoint 기대값까지 함께 지우고, 이슈가 범위 밖으로 지정한 것은 건드리지 않았습니다. — [#4060](https://github.com/apache/maka/pull/4060) merged
 
-한국어 로케일([#3975](https://github.com/apache/maka/issues/3975))을 맡아 진행 중입니다. 데스크톱 슬라이스 1의 문자열 1,006개를 다섯 카탈로그에 넣고 언어 선택기를 열었습니다([#5451](https://github.com/apache/maka/pull/5451)). 번역보다 용어집을 먼저 고정했고, 용어 빈도는 추정 대신 스크립트로 재서 다시 셀 수 있게 남겼습니다.
+한국어 로케일([#3975](https://github.com/apache/maka/issues/3975))을 맡아 진행 중입니다. 로케일 모델을 여는 코어([#5011](https://github.com/apache/maka/pull/5011))는 메인테이너 리뷰를 통과했고, 공식 통합 스택([#5100](https://github.com/apache/maka/pull/5100))에 공동 저자로 옮겨졌습니다. 데스크톱 슬라이스 1([#5451](https://github.com/apache/maka/pull/5451))에서는 문자열 1,006개를 다섯 카탈로그에 넣고 언어 선택기를 열었습니다. 조사·어미 규칙과 영어 상수로 새는 경로를 막는 테스트 11개도 함께 넣었습니다. 번역보다 용어집을 먼저 고정했고, 용어 빈도는 추정 대신 스크립트로 재서 다시 셀 수 있게 남겼습니다. 나머지 슬라이스가 모이면 한 번에 통합됩니다.
 
 작업 중 세 가지를 따로 이슈로 냈습니다. `ko`를 넣어도 타입이 통과하면서 영어가 그대로 나가는 경로([#5075](https://github.com/apache/maka/issues/5075)), `workHubHelp`가 세 로케일에서 갈린 머지 순서 문제([#5289](https://github.com/apache/maka/issues/5289)), `zh-CN`과 `zh-TW`가 상수를 공유해 번체 사용자가 커맨드 팔레트에서 간체를 보게 되는 문제([#5377](https://github.com/apache/maka/issues/5377)).
 
-### fedify — ActivityPub 프레임워크
+**[fedify](https://github.com/fedify-dev/fedify)** — ActivityPub 프레임워크
 
 - `PostgresMessageQueue`의 `initialized` 옵션이 스키마 DDL과 함께 JSON 직렬화 탐지까지 건너뛰어, 메시지가 JSONB 객체가 아니라 문자열로 저장되던 버그. 플래그를 둘로 쪼개 DDL만 막도록 했습니다. — [#1032](https://github.com/fedify-dev/fedify/pull/1032) merged
 - 같은 결함이 `PostgresKvStore`에도 있었습니다. 큐의 잘못된 행은 디큐되며 스스로 사라지지만 KV의 행은 테이블에 남아, `initialized`를 준 적 없는 프로세스의 읽기까지 문자열로 돌려줍니다. 이슈로 먼저 내고([#1031](https://github.com/fedify-dev/fedify/issues/1031)) 고쳤습니다. — [#1033](https://github.com/fedify-dev/fedify/pull/1033) merged
+- 공개키·HTTP 서명 스펙 캐시가 만료 없이 쌓여, 한 인스턴스의 Redis에만 19만 건이 넘게 남아 있었습니다. 구현 전에 두 가지 설계를 비교해 제안했고, 메인테이너와 합의한 형태로 쓰기 시점에 수명(키 30일, 스펙 90일, 설정 가능)을 넣고 기존 항목은 운영 문서로 정리하도록 했습니다. — [#1027](https://github.com/fedify-dev/fedify/pull/1027) merged
+- `RedisKvStore`가 소수 초 TTL을 그대로 `SETEX`에 넘겨 쓰기가 실패하던 버그. 다른 KV 어댑터와 비교해 호출자가 요청한 수명보다 짧아지지 않도록 올림으로 맞췄고, 통합 테스트는 실행 속도에 흔들리지 않도록 경과 시간을 감안한 `PTTL` 범위로 검증합니다. — [#1034](https://github.com/fedify-dev/fedify/pull/1034) merged
 
-`RedisKvStore`가 소수 초 TTL을 그대로 `SETEX`에 넘겨 쓰기가 실패하던 버그([#1034](https://github.com/fedify-dev/fedify/pull/1034))와, 공개키·서명 스펙 캐시에 수명 상한을 넣는 작업([#1027](https://github.com/fedify-dev/fedify/pull/1027))이 리뷰 중입니다. 그 과정에서 `@fedify/fixture`로 등록한 테스트 229개 중 228개가 Node.js에서 실행되지 않은 채 통과로 집계되고 있다는 것을 찾아 이슈로 냈습니다([#1036](https://github.com/fedify-dev/fedify/issues/1036)). ESM에서 `require`가 던지고 빈 `catch`가 삼키는 구조였습니다.
+그 과정에서 `@fedify/fixture`로 등록한 테스트 229개 중 228개가 Node.js에서 실행되지 않은 채 통과로 집계되고 있다는 것을 찾아 이슈로 냈습니다([#1036](https://github.com/fedify-dev/fedify/issues/1036)). ESM에서 `require`가 던지고 빈 `catch`가 삼키는 구조였고, 메인테이너가 고친 뒤([#1039](https://github.com/fedify-dev/fedify/pull/1039)) `@fedify/redis`의 Node.js 테스트는 7개에서 14개로 늘었습니다.
 
-### data-privacy-stack/presidio
+**[data-privacy-stack/presidio](https://github.com/data-privacy-stack/presidio)** — PII 탐지·비식별화
 
 - 한국어 인식기들이 `supported_languages`에 ISO 639-1이 아닌 `kr`을 `ko`와 함께 싣고 있었고, `UkPostcodeRecognizer` 항목이 중복돼 있었습니다. 이미 `kr`로 설정된 레지스트리가 깨지지 않도록 두 인식기에만 하위 호환 별칭으로 남기고 나머지를 정리했습니다. — [#2236](https://github.com/data-privacy-stack/presidio/pull/2236) merged
+
+**[Hackers' Pub](https://github.com/hackers-pub/hackerspub)** — fedify 기반 소셜 네트워크
+
+- 한두 글자 한국어 검색이 느린 문제에서, 원인이 인덱스만이 아니라 `ANALYZE` 샘플에 따라 흔들리는 플래너 추정이라는 걸 측정으로 보였습니다. 같은 쿼리가 샘플에 따라 26ms도, 1.4초도 됩니다. 메인테이너 요청으로 `pg_trgm`·n-gram 배열·`pg_bigm`·ParadeDB `pg_search`를 같은 조건에서 비교했고, 결과가 기존 검색과 같은지는 차분 테스트 432건으로 확인했습니다. 최악 6초이던 쿼리가 세 후보 모두에서 30ms대로 내려옵니다. — [#384](https://github.com/hackers-pub/hackerspub/issues/384) 조사
 
 ---
 
