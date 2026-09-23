@@ -44,7 +44,7 @@ LLM 리스크 분류기와 OWL 2 온톨로지 추론을 openFDA 실데이터 위
 
 ### 오픈소스 기여
 
-머지 8건 — apache/maka 3 · fedify 4 · presidio 1
+머지 9건 — apache/maka 3 · fedify 4 · lindera 1 · presidio 1
 
 **[apache/maka](https://github.com/apache/maka)** — Apache Software Foundation (incubating)
 
@@ -65,9 +65,26 @@ LLM 리스크 분류기와 OWL 2 온톨로지 추론을 openFDA 실데이터 위
 
 그 과정에서 `@fedify/fixture`로 등록한 테스트 229개 중 228개가 Node.js에서 실행되지 않은 채 통과로 집계되고 있다는 것을 찾아 이슈로 냈습니다([#1036](https://github.com/fedify-dev/fedify/issues/1036)). ESM에서 `require`가 던지고 빈 `catch`가 삼키는 구조였고, 메인테이너가 고친 뒤([#1039](https://github.com/fedify-dev/fedify/pull/1039)) `@fedify/redis`의 Node.js 테스트는 7개에서 14개로 늘었습니다.
 
+**[lindera](https://github.com/lindera/lindera)** — Rust 형태소 분석 라이브러리
+
+- 일본어에는 한자 숫자를 아라비아 숫자로 바꾸는 토큰 필터가 있는데 한국어에는 없었습니다(2022년부터 열려 있던 이슈). 한자어 수사는 일본어와 자릿수 구조가 같아 알고리즘을 그대로 따르되, 고유어 수사는 자릿수 구조가 없어 변환하지 않습니다. 리뷰에서 그 경계가 제 생각보다 좁다는 걸 배웠습니다. `일곱`은 한자어 `일`로 시작해 글자 단위로 바꾸면 `1곱`이 되고, `하나`·`스물`은 수사 음절이 없어 우연히 무사했을 뿐이었습니다. Lucene의 `KoreanNumberFilter`처럼 **모든 글자가 수사일 때만 변환**하도록 게이트를 넣어 해결했습니다. — [#1024](https://github.com/lindera/lindera/pull/1024) merged · 6.1.0
+- 처음 올린 본문에는 `이천이십육` → `2026`을 파이프라인 결과인 것처럼 적었는데, ko-dic은 이를 형태소 단위로 쪼개기 때문에 실제로는 `2 1000 2 10 6`이 나옵니다. 메인테이너가 실제 출력으로 지적해 주었고, 손으로 만든 토큰 대신 사전을 실제로 로드하는 테스트로 바꾸고 문서에 이 사실을 명시했습니다. 토큰 병합은 메인테이너가 별도 이슈로 진행 중이며, 그 뒤 일본어·한국어 필터를 합치는 공용 엔진을 맡기로 했습니다.
+
 **[data-privacy-stack/presidio](https://github.com/data-privacy-stack/presidio)** — PII 탐지·비식별화
 
 - 한국어 인식기들이 `supported_languages`에 ISO 639-1이 아닌 `kr`을 `ko`와 함께 싣고 있었고, `UkPostcodeRecognizer` 항목이 중복돼 있었습니다. 이미 `kr`로 설정된 레지스트리가 깨지지 않도록 두 인식기에만 하위 호환 별칭으로 남기고 나머지를 정리했습니다. — [#2236](https://github.com/data-privacy-stack/presidio/pull/2236) merged
+
+**[Kiwi](https://github.com/bab2min/Kiwi) · [kiwipiepy](https://github.com/bab2min/kiwipiepy)** — 한국어 형태소 분석기
+
+- 형태소를 다시 문장으로 잇는 `join`이 `( mike`, `9 %씩`처럼 띄어쓰기를 깨뜨린다는 제보. 원인은 규칙 순서였습니다. 괄호 예외가 "영문·숫자 앞에는 공백" 규칙보다 아래에 있어 `(`+`가`는 붙고 `(`+`mike`만 떨어졌고, 기호는 앞에만 공백을 넣어 `3`,`+`,`4`가 `3 +4`라는 어느 표기법도 아닌 결과가 됐습니다. — [Kiwi#278](https://github.com/bab2min/Kiwi/pull/278)
+- 같은 제보의 `1인` → `1 인`은 고치지 않았습니다. 숫자 뒤 단위명사는 의존명사로 태깅되면 이미 붙고(`3등`, `10위`), 안 붙는 건 일반명사로 태깅되는 쪽(`인`, `층`, `급`)뿐이라 규칙이 아니라 분석 결과의 문제로 보였기 때문입니다. 메인테이너가 이 진단이 맞다고 확인했고, 후보 순위와 점수 차를 재서 "모델 튜닝으로 고칠 수 있는 것"과 "사전에 후보 자체가 없는 것"을 나눠 정리했습니다. — [kiwipiepy#220](https://github.com/bab2min/kiwipiepy/issues/220)
+- 선어말어미를 어간에서 떼지 않는 옵션(`들어가/VV`+`시/EP` → `들어가시/VV`). 메인테이너가 구현 위치를 지정해 둔 이슈였습니다. — [Kiwi#279](https://github.com/bab2min/Kiwi/pull/279)
+- 분석기 객체가 pickle되지 않아 멀티프로세싱 워커로 넘길 수 없던 문제. 사전 조작을 재생하는 방식으로 구현했으나, 메인테이너가 "복원할 수 없는 것을 절반만 복원하느니 명시적으로 실패하는 편이 낫다"며 더 좁은 설계를 제안해 그 방향으로 다시 쓰는 중입니다. — [kiwipiepy#235](https://github.com/bab2min/kiwipiepy/pull/235)
+
+**[Haystack](https://github.com/deepset-ai/haystack)** — LLM 오케스트레이션 프레임워크
+
+- 기본 BM25 토크나이저가 한국어 조사를 명사에서 떼어내지 못해, `서울`로 검색하면 `서울은`이 든 문서가 하나도 안 잡힙니다. 한국어 문장에서 명사는 거의 항상 조사가 붙은 채 나오므로 사실상 전량 실패입니다. 일화 대신 같은 구조의 한국어/영어 10개 주제 벤치마크로 재현했습니다(한국어 0/10, 영어 10/10). — [#12836](https://github.com/deepset-ai/haystack/issues/12836)
+- 수정 PR이 올라오자 메인테이너가 원어민 검증을 요청했습니다. recall은 0/10 → 10/10으로 고쳐지지만 글자 단위 토큰은 정밀도를 잃습니다. `서울` 검색에 "서점 앞에서 울고 있는" 문서가 1위로 올라옵니다. 한글 한 글자는 단어보다 알파벳 한 글자에 가깝기 때문입니다. 유니그램·바이그램·둘 다를 같은 코퍼스에서 비교해 수치로 제출했고, NFD 정규화와 한국 한자가 쓰는 호환 한자 블록 누락도 함께 보고해 반영됐습니다. 남은 정밀도 문제는 메인테이너 요청으로 별도 이슈를 열어 설계를 논의 중입니다. — [#12867](https://github.com/deepset-ai/haystack/issues/12867)
 
 **[Hackers' Pub](https://github.com/hackers-pub/hackerspub)** — fedify 기반 소셜 네트워크
 
